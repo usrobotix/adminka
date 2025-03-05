@@ -1,10 +1,22 @@
 <?php
+session_start(); // Start the session at the beginning
 include 'db.php';
+
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php"); // Redirect to login page if not logged in
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'];
     $content = $_POST['content'];
-    $author_id = $_SESSION['user_id']; // Получаем ID текущего пользователя
+    $author_id = $_SESSION['user_id']; // Get the current user's ID
+
+    // Ensure that author_id is not null
+    if ($author_id === null) {
+        die("Error: Author ID is not set.");
+    }
 
     $stmt = $pdo->prepare("INSERT INTO articles (title, content, author_id) VALUES (?, ?, ?)");
     $stmt->execute([$title, $content, $author_id]);
@@ -21,8 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Добавить статью</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Place the first <script> tag in your HTML's <head> -->
-<script src="https://cdn.tiny.cloud/1/5is2s9oaszalfbc8zm3o8g6fs9zm7xauzgbkf0n1zxdzvq57/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/5is2s9oaszalfbc8zm3o8g6fs9zm7xauzgbkf0n1zxdzvq57/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
         tinymce.init({
             selector: '#content',
@@ -31,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             height: 300,
             setup: function (editor) {
                 editor.on('change', function () {
-                    editor.save(); // Сохраняем содержимое в оригинальный textarea
+                    editor.save(); // Save the content to the original textarea
                 });
             }
         });

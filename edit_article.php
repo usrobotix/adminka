@@ -48,6 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="container">
+    <?php if (isset($_SESSION['user_id'])): ?>
+    <a href="logout.php" class="btn" style="float: right;">Выход</a>
+<?php endif; ?>
         <h1>Редактировать статью</h1>
         <form method="POST" action="">
             <div class="form-group">
