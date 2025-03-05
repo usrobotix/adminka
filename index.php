@@ -32,11 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <h1>Авторизация</h1>
-  <?php
-$password = '1515';
-$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-echo $hashedPassword;
-?>
+
         <?php if (isset($error)): ?>
             <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>
