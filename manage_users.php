@@ -21,7 +21,7 @@ if ($current_user['role_id'] != 3) { // 3 - ID роли "Администрат�
 }
 
 // Получаем всех пользователей
-$stmt = $pdo->query("SELECT u.id, u.username, r.name AS role FROM users u JOIN roles r ON u.role_id = r.id");
+$stmt = $pdo->query("SELECT u.id, u.username, u.first_name, u.last_name, u.middle_name, u.birth_year, u.photo, u.position, u.phone, u.telegram, u.whatsapp, u.email, u.specialization, r.name AS role FROM users u JOIN roles r ON u.role_id = r.id");
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Обработка создания нового пользователя
@@ -48,9 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="container">
-    <?php if (isset($_SESSION['user_id'])): ?>
-    <a href="logout.php" class="btn" style="float: right;">Выход</a>
-<?php endif; ?>
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <a href="logout.php" class="btn" style="float: right;">Выход</a>
+        <?php endif; ?>
         <h1>Управление пользователями</h1>
 
         <h2>Создать нового пользователя</h2>
@@ -74,21 +74,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn">Создать пользователя</button>
         </form>
 
-        <h2>Список пользователей</h2>
+
+
+                        <h2>Список пользователей</h2>
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Имя пользователя</th>
+                    <th>Имя</th>
+                    <th>Фамилия</th>
+                    <th>Отчество</th>
+                    <th>Год рождения</th>
+                    <th>Фотография</th>
+                    <th>Должность</th>
+                    <th>Телефон</th>
+                    <th>Телеграм</th>
+                    <th>Ватсап</th>
+                    <th>Почта</th>
+                    <th>Специализация</th>
                     <th>Роль</th>
+                    <?php if ($current_user['role_id'] == 3): // Только для администратора ?>
+                        <th>Действия</th>
+                    <?php endif; ?>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($users as $user): ?>
                     <tr>
                         <td><?php echo $user['id']; ?></td>
-                        <td><?php echo htmlspecialchars($user['username']); ?></td>
+                        <td><?php echo htmlspecialchars($user['first_name']); ?></td>
+                        <td><?php echo htmlspecialchars($user['last_name']); ?></td>
+                        <td><?php echo htmlspecialchars($user['middle_name']); ?></td>
+                        <td><?php echo htmlspecialchars($user['birth_year']); ?></td>
+                        <td>
+                            <?php if ($user['photo']): ?>
+                                <img src="<?php echo htmlspecialchars($user['photo']); ?>" alt="Фото" style="width: 50px; height: auto;">
+                            <?php else: ?>
+                                Нет фото
+                            <?php endif; ?>
+                        </td>
+                        <td><?php echo htmlspecialchars($user['position']); ?></td>
+                        <td><?php echo htmlspecialchars($user['phone']); ?></td>
+                        <td><?php echo htmlspecialchars($user['telegram']); ?></td>
+                        <td><?php echo htmlspecialchars($user['whatsapp']); ?></td>
+                        <td><?php echo htmlspecialchars($user['email']); ?></td>
+                        <td><?php echo htmlspecialchars($user['specialization']); ?></td>
                         <td><?php echo htmlspecialchars($user['role']); ?></td>
+                        <?php if ($current_user['role_id'] == 3): // Только для администратора ?>
+                            <td>
+                                <a href="edit_user.php?id=<?php echo $user['id']; ?>">Редактировать</a>
+                                <a href="delete_user.php?id=<?php echo $user['id']; ?>" onclick="return confirm('Вы уверены, что хотите удалить этого пользователя?');">Удалить</a>
+                                <?php if ($user['is_active']): ?>
+                                    <a href="?action=deactivate&id=<?php echo $user['id']; ?>" onclick="return confirm('Вы уверены, что хотите деактивировать этого пользователя?');">Деактивировать</a>
+                                <?php else: ?>
+                                    <a href="?action=activate&id=<?php echo $user['id']; ?>" onclick="return confirm('Вы уверены, что хотите активировать этого пользователя?');">Активировать</a>
+                                <?php endif; ?>
+                            </td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
